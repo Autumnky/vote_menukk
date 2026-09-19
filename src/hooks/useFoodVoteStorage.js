@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const STORAGE_KEY = 'office_food_voting_v1';
+const STORAGE_KEY = 'office_food_voting_v2';
 const FALLBACK_ICONS = ['🍛', '🍜', '🍕', '🍔', '🥗', '🍱', '🥪', '🧋', '🍣', '🍲'];
 
 export function useFoodVoteStorage() {
@@ -17,31 +17,34 @@ export function useFoodVoteStorage() {
     return [];
   });
 
-  const [userVote, setUserVote] = useState(() => {
+  // สถานะปิดโหวต
+  const [isVotingClosed, setIsVotingClosed] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        return parsed.userVote || null;
+        return Boolean(parsed.isVotingClosed);
       }
     } catch (err) {
-      console.error('Error reading userVote from localStorage:', err);
+      console.error('Error reading isVotingClosed:', err);
     }
-    return null;
+    return false;
   });
 
-  // บันทึกลง localStorage เมื่อ state มีการเปลี่ยนแปลง
+  // เมนูที่คนที่กำลังถือเครื่องเลือกไว้ชั่วคราว (ยังไม่ได้ส่งต่อ)
+  const [currentSelectedId, setCurrentSelectedId] = useState(null);
+
+  // บันทึก LocalStorage
   useEffect(() => {
     try {
-      const payload = JSON.stringify({ menus, userVote });
+      const payload = JSON.stringify({ menus, isVotingClosed });
       localStorage.setItem(STORAGE_KEY, payload);
     } catch (err) {
-      console.error('LocalStorage quota exceeded or error occurred:', err);
-      alert('พื้นที่จัดเก็บเต็ม กรุณาลดขนาดภาพหรือลบเมนูที่ไม่จำเป็นออก');
+      console.error('LocalStorage error:', err);
     }
-  }, [menus, userVote]);
+  }, [menus, isVotingClosed]);
 
-  // ฟังก์ชันเพิ่มเมนูใหม่
+  // เพิ่มเมนูใหม่
   const addMenu = ({ name, price, imageUrl }) => {
     const randomIcon = FALLBACK_ICONS[Math.floor(Math.random() * FALLBACK_ICONS.length)];
     const newMenu = {
@@ -52,51 +55,58 @@ export function useFoodVoteStorage() {
       fallbackIcon: randomIcon,
       votes: 0,
     };
-
     setMenus((prev) => [newMenu, ...prev]);
   };
 
-  // ฟังก์ชันลบเมนู
+  // ลบเมนู
   const deleteMenu = (id) => {
     setMenus((prev) => prev.filter((item) => item.id !== id));
-    if (userVote === id) {
-      setUserVote(null);
-    }
+    if (currentSelectedId === id) setCurrentSelectedId(null);
   };
 
-  // ฟังก์ชันโหวต / สลับโหวต / กดยกเลิก
-  const toggleVote = (targetId) => {
-    // กรณีที่ 1: กดยกเลิกโหวตเดิม (คลิกซ้ำที่เมนูเดิม)
-    if (userVote === targetId) {
-      setMenus((prev) =>
-        prev.map((item) =>
-          item.id === targetId ? { ...item, votes: Math.max(0, item.votes - 1) } : item
-        )
-      );
-      setUserVote(null);
-      return;
-    }
+  // เลือกเมนูสำหรับคนปัจจุบัน (ยังไม่สะสมคะแนนจนกว่าจะยืนยัน หรือเลือกแบบกดปุ๊บนับปั๊บ)
+  const selectMenuForCurrentPerson = (targetId) => {
+    if (isVotingClosed) return;
+    // คลิกซ้ำเพื่อยกเลิกการเลือก
+    setCurrentSelectedId((prev) => (prev === targetId ? null : targetId));
+  };
 
-    // กรณีที่ 2: เพิ่งโหวตครั้งแรก หรือเปลี่ยนจากเมนูอื่นมาเป็นเมนูนี้
+  // กดยืนยันโหวตเพื่อส่งต่อให้คนถัดไป
+  const confirmAndNextVoter = () => {
+    if (!currentSelectedId || isVotingClosed) return;
+
     setMenus((prev) =>
-      prev.map((item) => {
-        if (item.id === targetId) {
-          return { ...item, votes: item.votes + 1 };
-        }
-        if (userVote && item.id === userVote) {
-          return { ...item, votes: Math.max(0, item.votes - 1) };
-        }
-        return item;
-      })
+      prev.map((item) =>
+        item.id === currentSelectedId ? { ...item, votes: item.votes + 1 } : item
+      )
     );
-    setUserVote(targetId);
+    setCurrentSelectedId(null); // เคลียร์หน้าจอให้คนถัดไปกด
+  };
+
+  // สลับสถานะเปิด/ปิดรับโหวต
+  const toggleVotingStatus = () => {
+    setIsVotingClosed((prev) => !prev);
+    setCurrentSelectedId(null);
+  };
+
+  // รีเซ็ตคะแนนทั้งหมดเริ่มใหม่
+  const resetAllVotes = () => {
+    if (confirm('คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตคะแนนโหวตทั้งหมดเป็น 0?')) {
+      setMenus((prev) => prev.map((item) => ({ ...item, votes: 0 })));
+      setCurrentSelectedId(null);
+      setIsVotingClosed(false);
+    }
   };
 
   return {
     menus,
-    userVote,
+    isVotingClosed,
+    currentSelectedId,
     addMenu,
     deleteMenu,
-    toggleVote,
+    selectMenuForCurrentPerson,
+    confirmAndNextVoter,
+    toggleVotingStatus,
+    resetAllVotes,
   };
 }
