@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 export default function Navbar({ currentView, onViewChange, menuCount }) {
   const navItems = [
     { id: 'MANAGE', label: 'จัดการเมนู', icon: '📝', count: menuCount },
+    { id: 'RECOMMENDED', label: 'เมนูแนะนำ', icon: '✨' },
     { id: 'VOTE_SUMMARY', label: 'ห้องโหวต & สรุปผล', icon: '🗳️' },
   ];
 
@@ -33,7 +34,7 @@ export default function Navbar({ currentView, onViewChange, menuCount }) {
                 key={item.id}
                 type="button"
                 onClick={() => onViewChange(item.id)}
-                className={`relative px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1.5 select-none ${
+                className={`relative px-3 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1.5 select-none ${
                   isActive ? 'text-orange-600' : 'text-slate-600 hover:text-slate-900'
                 }`}
               >

@@ -1,8 +1,10 @@
+// src/App.jsx
 import React, { useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { useFoodVoteStorage } from './hooks/useFoodVoteStorage';
 import Navbar from './components/Navbar';
 import ManageView from './views/ManageView';
+import RecommendedView from './views/RecommendedView';
 import VoteSummaryView from './views/VoteSummaryView';
 
 export default function App() {
@@ -32,7 +34,8 @@ export default function App() {
 
       <main className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-8">
         <AnimatePresence mode="wait">
-          {currentView === 'MANAGE' ? (
+          {/* 1. หน้าจัดการเมนู */}
+          {currentView === 'MANAGE' && (
             <ManageView
               key="view-manage"
               menus={menus}
@@ -40,7 +43,21 @@ export default function App() {
               onDeleteMenu={deleteMenu}
               onGoToVote={() => setCurrentView('VOTE_SUMMARY')}
             />
-          ) : (
+          )}
+
+          {/* 2. หน้ารายการอาหารแนะนำ */}
+          {currentView === 'RECOMMENDED' && (
+            <RecommendedView
+              key="view-recommended"
+              existingMenus={menus}
+              onAddMenu={addMenu}
+              isVotingClosed={isVotingClosed}
+              onGoToVote={() => setCurrentView('VOTE_SUMMARY')}
+            />
+          )}
+
+          {/* 3. หน้าห้องโหวตและสรุปผล */}
+          {currentView === 'VOTE_SUMMARY' && (
             <VoteSummaryView
               key="view-vote"
               menus={menus}
