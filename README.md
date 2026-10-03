@@ -1,6 +1,9 @@
 # 🍔 What to Eat? - Food Voting Website
 
-เว็บไซต์สำหรับโหวตและสุ่มเมนูอาหาร สร้างมาเพื่อแก้ปัญหาระดับชาติที่ว่า "วันนี้จะกินอะไรดี?" เหมาะสำหรับใช้โหวตกันในกลุ่มเพื่อน ที่ทำงาน หรือใช้สุ่มเมนูส่วนตัวเมื่อคิดไม่ออก✨ ฟีเจอร์หลัก (Features)
+เว็บไซต์สำหรับโหวตและสุ่มเมนูอาหาร สร้างมาเพื่อแก้ปัญหาระดับชาติที่ว่า "วันนี้จะกินอะไรดี?" เหมาะสำหรับใช้โหวตกันในกลุ่มเพื่อน ที่ทำงาน หรือใช้สุ่มเมนูส่วนตัวเมื่อคิดไม่ออก
+
+✨ ฟีเจอร์หลัก (Features)
+
 🎲 Random Menu: สุ่มเมนูอาหารแบบรวดเร็ว
 📊 Voting System: สร้างโหวตเมนูอาหารเพื่อให้คนในกลุ่มช่วยกันเลือก
 📱 Responsive Design: รองรับการใช้งานทั้งบนคอมพิวเตอร์และสมาร์ทโฟน⚡ Fast Performance: พัฒนาด้วย Vite ทำให้โหลดและประมวลผลได้อย่างรวดเร็ว🛠 เทคโนโลยีที่ใช้ (Tech Stack)Frontend Framework: (ใส่ชื่อ Framework เช่น Vue.js, React, หรือ Svelte)Build Tool: ViteLinter: ESLint🚀 การติดตั้งและใช้งาน (Getting Started)สิ่งที่ต้องมี (Prerequisites)Node.js (แนะนำเวอร์ชัน 18 ขึ้นไป)Package Manager เช่น npm, yarn หรือ pnpmขั้นตอนการติดตั้ง (Installation)Clone repository นี้git clone https://github.com/your-username/your-repo-name.git
